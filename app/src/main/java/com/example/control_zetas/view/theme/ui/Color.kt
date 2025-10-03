@@ -1,4 +1,4 @@
-package com.example.control_zetas.ui.theme
+package com.example.control_zetas.view.theme.ui
 
 import androidx.compose.ui.graphics.Color
 
