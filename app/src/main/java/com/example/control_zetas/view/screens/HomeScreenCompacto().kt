@@ -38,15 +38,17 @@ fun HomeScreenCompacto(){
                 Text("Presioname")
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Fit
-            )
-
+            @Composable
+            fun  logo () {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
 
         }
     }
