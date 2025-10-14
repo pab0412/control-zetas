@@ -28,4 +28,5 @@ class UsuarioViewModel : ViewModel(){
     fun onAceptarTerminosChange(valor: Boolean){
         _estado.update {it.copy(aceptaterminos = valor) }
     }
+
 }
