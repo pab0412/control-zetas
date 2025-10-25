@@ -38,6 +38,11 @@ class UsuarioViewModel : ViewModel(){
         }
     }
 
+    fun onImagenChange(uri: String){
+        _estado.update { it.copy(imagen = uri) }
+    }
+
+
     fun validarFormulario() : Boolean{
         val estadoActual = _estado.value
         val errores = UsuarioErrores(

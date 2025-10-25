@@ -1,9 +1,7 @@
 package com.example.game_zone.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
@@ -11,13 +9,13 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.game_zone.model.GustosDisponibles
+import com.example.game_zone.ui.components.CircularAvatarClickable
+import com.example.game_zone.ui.components.CameraImagePicker
 import com.example.game_zone.ui.navegation.Screen
 import com.example.game_zone.view_model.MainViewModel
 import com.example.game_zone.view_model.UsuarioViewModel
@@ -32,6 +30,7 @@ fun ProfileScreen(
     val items = listOf(Screen.Home, Screen.Profile)
     var selectedItem by remember { mutableStateOf(1) }
     val uiState by usuarioViewModel.estado.collectAsState()
+    var showImageOptions by remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -68,21 +67,23 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Avatar
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "Avatar",
-                    modifier = Modifier.size(60.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+            // Avatar clickeable con captura de imagen
+            CircularAvatarClickable(
+                imageUrl = uiState.imagen,
+                initials = uiState.nombre.ifEmpty { "UG" },
+                onClick = { showImageOptions = true },
+                size = 100.dp
+            )
+
+            // Diálogo para capturar/seleccionar imagen
+            CameraImagePicker(
+                currentImageUrl = uiState.imagen,
+                onImageSelected = { imagePath ->
+                    usuarioViewModel.onImagenChange(imagePath)
+                },
+                showOptions = showImageOptions,
+                onDismiss = { showImageOptions = false }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -208,6 +209,25 @@ fun ProfileScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón de cerrar sesión
+            OutlinedButton(
+                onClick = { /* TODO: Cerrar sesión */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ExitToApp,
+                    contentDescription = "Cerrar sesión",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Cerrar Sesión")
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
         }

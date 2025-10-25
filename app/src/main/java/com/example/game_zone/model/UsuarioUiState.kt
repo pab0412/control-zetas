@@ -7,6 +7,7 @@ data class UsuarioUiState(
     val direccion: String = "",
     val aceptaterminos: Boolean = false,
     val gustos: List<String> = emptyList(),
+    val imagen: String? = null,
     val errores: UsuarioErrores = UsuarioErrores()
 )
 
