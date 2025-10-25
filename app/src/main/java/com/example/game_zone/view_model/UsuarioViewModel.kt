@@ -1,3 +1,5 @@
+package com.example.game_zone.view_model
+
 import androidx.lifecycle.ViewModel
 import com.example.game_zone.model.UsuarioUiState
 import com.example.game_zone.model.UsuarioErrores
@@ -29,16 +31,24 @@ class UsuarioViewModel : ViewModel(){
         _estado.update {it.copy(aceptaterminos = valor) }
     }
 
+    fun onGustoChange(gusto: String, seleccionado:Boolean){
+        _estado.update {
+            val nuevosGustos = if(seleccionado) it.gustos + gusto else it.gustos - gusto
+            it.copy(gustos = nuevosGustos)
+        }
+    }
+
     fun validarFormulario() : Boolean{
         val estadoActual = _estado.value
         val errores = UsuarioErrores(
             nombre = if (estadoActual.nombre.isBlank()) "Campo Obligatorio" else null,
             correo = if (!estadoActual.correo.contains("@")) "Correo Invalido" else null,
             clave = if (estadoActual.clave.length < 6) "Clave debe tener al menos 6 digitos" else null,
-            direccion = if(estadoActual.direccion.isBlank()) "Campo Obligatorio" else null
+            direccion = if(estadoActual.direccion.isBlank()) "Campo Obligatorio" else null,
+            gustos = if(estadoActual.gustos.isEmpty()) "Seleccione al menos un gusto" else null
         )
 
-        val hayErrores = listOfNotNull(errores.nombre, errores.correo, errores.clave, errores.direccion).isNotEmpty()
+        val hayErrores = listOfNotNull(errores.nombre, errores.correo, errores.clave, errores.direccion, errores.gustos).isNotEmpty()
 
         _estado.update {it.copy(errores = errores)}
 

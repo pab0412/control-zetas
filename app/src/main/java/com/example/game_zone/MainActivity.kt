@@ -1,6 +1,6 @@
 package com.example.game_zone
 
-import UsuarioViewModel
+import EstadoViewModel
 import com.example.game_zone.ui.screens.HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,13 +20,19 @@ import com.example.game_zone.ui.theme.Game_zoneTheme
 import com.example.game_zone.view_model.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import com.example.game_zone.ui.navegation.NavigationEvent
+import com.example.game_zone.ui.screens.LoginScreen
+import com.example.game_zone.ui.screens.PantallaCarga
 import com.example.game_zone.ui.screens.RegistroScreen
+import com.example.game_zone.view_model.LoginViewModel
+import com.example.game_zone.view_model.UsuarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             Game_zoneTheme {
 
@@ -34,6 +40,11 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = viewModel()
                 val navController = rememberNavController()
                 val usuarioViewModel: UsuarioViewModel = viewModel()
+                val loginViewModel: LoginViewModel = viewModel()
+                val estadoViewModel: EstadoViewModel = viewModel()
+
+                // Obtener estado de carga
+                val activo by estadoViewModel.activo.collectAsState()
 
                 // Escuchar eventos de navegación emitidos por el ViewModel
                 LaunchedEffect(key1 = Unit) {
@@ -56,30 +67,38 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Layout base con NavHost
-                Scaffold(
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
+                if (activo == null){
+                    PantallaCarga(modifier = Modifier.fillMaxSize(), viewModel= estadoViewModel)
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.Home.route,
-                        modifier = Modifier.padding(paddingValues = innerPadding)
-                    ) {
-                        composable(route = Screen.Home.route) {
-                            HomeScreen(navController = navController, viewModel = viewModel)
-                        }
+                } else {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize()
+                    ) { innerPadding ->
 
-                        composable(route = Screen.Profile.route) {
-                            ProfileScreen(navController = navController, viewModel = viewModel)
-                        }
+                        NavHost(
+                            navController = navController,
+                            startDestination = Screen.Login.route,
+                            modifier = Modifier.padding(paddingValues = innerPadding)
+                        ) {
+                            composable(route = Screen.Home.route) {
+                                HomeScreen(navController = navController, viewModel = viewModel)
+                            }
 
-                        composable(route = Screen.Settings.route) {
-                            SettingsScreen(navController = navController, viewModel = viewModel)
-                        }
+                            composable(route = Screen.Profile.route) {
+                                ProfileScreen(navController = navController, mainViewModel = viewModel, usuarioViewModel = usuarioViewModel)
+                            }
 
-                        composable(route = Screen.Registro.route){
-                            RegistroScreen(navController= navController, viewModel = usuarioViewModel)
+                            composable(route = Screen.Settings.route) {
+                                SettingsScreen(navController = navController, viewModel = viewModel)
+                            }
+
+                            composable(route = Screen.Registro.route){
+                                RegistroScreen(navController= navController, viewModel = usuarioViewModel)
+                            }
+
+                            composable(route = Screen.Login.route){
+                                LoginScreen(navController = navController, viewModel = loginViewModel)
+                            }
                         }
                     }
                 }

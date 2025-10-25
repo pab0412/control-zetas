@@ -6,6 +6,18 @@ data class UsuarioUiState(
     val clave: String = "",
     val direccion: String = "",
     val aceptaterminos: Boolean = false,
+    val gustos: List<String> = emptyList(),
     val errores: UsuarioErrores = UsuarioErrores()
-
 )
+
+object GustosDisponibles {
+    val lista = listOf(
+        "Consolas",
+        "Juegos Físicos",
+        "Accesorios Gaming",
+        "Auriculares/Headsets",
+        "Teclados y Ratones",
+        "Sillas Gamer",
+        "Monitores Gaming",
+    )
+}
