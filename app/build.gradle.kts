@@ -68,6 +68,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("androidx.compose.material:material-icons-extended")
 
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:${room_version}")
