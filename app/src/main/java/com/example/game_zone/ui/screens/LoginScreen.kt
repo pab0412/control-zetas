@@ -28,8 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.game_zone.ui.navegation.Screen
-import com.example.game_zone.view_model.LoginViewModel
+import com.example.game_zone.ui.navigation.Screen
+import com.example.game_zone.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(

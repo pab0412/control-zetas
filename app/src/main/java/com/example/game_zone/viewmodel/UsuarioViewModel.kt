@@ -1,4 +1,4 @@
-package com.example.game_zone.view_model
+package com.example.game_zone.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.game_zone.model.UsuarioUiState

@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,9 +17,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.game_zone.ui.components.CircularAvatarClickable
 import com.example.game_zone.ui.components.CameraImagePicker
-import com.example.game_zone.ui.navegation.Screen
-import com.example.game_zone.view_model.MainViewModel
-import com.example.game_zone.view_model.UsuarioViewModel
+import com.example.game_zone.ui.navigation.Screen
+import com.example.game_zone.viewmodel.MainViewModel
+import com.example.game_zone.viewmodel.UsuarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -212,7 +213,7 @@ fun ProfileScreen(
 
             // Botón de cerrar sesión
             OutlinedButton(
-                onClick = { /* TODO: Cerrar sesión */ },
+                onClick = { navController.navigate(Screen.Login.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -221,7 +222,7 @@ fun ProfileScreen(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ExitToApp,
+                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                     contentDescription = "Cerrar sesión",
                     modifier = Modifier.size(20.dp)
                 )

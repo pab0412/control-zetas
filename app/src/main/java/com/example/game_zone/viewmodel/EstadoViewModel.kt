@@ -1,3 +1,6 @@
+package com.example.game_zone.viewmodel
+
+import EstadoDataStore
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope

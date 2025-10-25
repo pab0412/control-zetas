@@ -1,6 +1,6 @@
 package com.example.game_zone
 
-import EstadoViewModel
+import com.example.game_zone.viewmodel.EstadoViewModel
 import com.example.game_zone.ui.screens.HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,20 +13,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.game_zone.ui.navegation.Screen
+import com.example.game_zone.ui.navigation.Screen
 import com.example.game_zone.ui.screens.ProfileScreen
 import com.example.game_zone.ui.screens.SettingsScreen
 import com.example.game_zone.ui.theme.Game_zoneTheme
-import com.example.game_zone.view_model.MainViewModel
+import com.example.game_zone.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
-import com.example.game_zone.ui.navegation.NavigationEvent
+import com.example.game_zone.ui.navigation.NavigationEvent
 import com.example.game_zone.ui.screens.LoginScreen
 import com.example.game_zone.ui.screens.PantallaCarga
 import com.example.game_zone.ui.screens.RegistroScreen
-import com.example.game_zone.view_model.LoginViewModel
-import com.example.game_zone.view_model.UsuarioViewModel
+import com.example.game_zone.viewmodel.LoginViewModel
+import com.example.game_zone.viewmodel.UsuarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {

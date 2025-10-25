@@ -1,6 +1,6 @@
 package com.example.game_zone.ui.screens
 
-import EstadoViewModel
+import com.example.game_zone.viewmodel.EstadoViewModel
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box

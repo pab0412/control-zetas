@@ -1,4 +1,4 @@
-package com.example.game_zone.ui.navegation
+package com.example.game_zone.ui.navigation
 
 sealed class NavigationEvent{
 

@@ -9,18 +9,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.game_zone.ui.navegation.Screen
-import com.example.game_zone.view_model.MainViewModel
+import com.example.game_zone.ui.navigation.Screen
+import com.example.game_zone.viewmodel.MainViewModel
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,                // Controlador de navegación para moverse entre pantallas
-    viewModel: MainViewModel = viewModel()       // ViewModel que centraliza la navegación (eventos)
+    navController: NavController,
+    viewModel: MainViewModel = viewModel()
 ) {
     //  Estructura visual centralizada
     Column(
         modifier = Modifier
-            .fillMaxSize()                       // Ocupa todo el alto disponible
+            .fillMaxSize()
             .padding(all = 16.dp),               // Margen interno general
         verticalArrangement = Arrangement.Center, // Centrar elementos verticalmente
         horizontalAlignment = Alignment.CenterHorizontally // Centrar elementos horizontalmente

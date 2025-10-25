@@ -35,8 +35,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.game_zone.model.GustosDisponibles
-import com.example.game_zone.ui.navegation.Screen
-import com.example.game_zone.view_model.UsuarioViewModel
+import com.example.game_zone.ui.navigation.Screen
+import com.example.game_zone.viewmodel.UsuarioViewModel
 
 @Composable
 fun RegistroScreen(

@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.game_zone.ui.navegation.Screen
-import com.example.game_zone.view_model.MainViewModel
+import com.example.game_zone.ui.navigation.Screen
+import com.example.game_zone.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 
@@ -46,7 +46,7 @@ fun HomeScreen(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Divider()
+                HorizontalDivider()
                 NavigationDrawerItem(
                     label = { Text("Ir al perfil") },
                     selected = false,
@@ -61,18 +61,6 @@ fun HomeScreen(
                     onClick = {
                         scope.launch { drawerState.close() }
                         viewModel.navigateTo(Screen.Settings)
-                    }
-                )
-
-                Spacer(Modifier.height(36.dp))
-                Divider()
-
-                NavigationDrawerItem(
-                    label = { Text("Cerrar sesión") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        viewModel.navigateTo(Screen.Login)
                     }
                 )
             }
@@ -96,7 +84,7 @@ fun HomeScreen(
                         ) {
                             Icon(
                                 Icons.Filled.Menu,
-                                contentDescription = "Menu"
+                                contentDescription = "Menú"
                             )
                         }
                     },
