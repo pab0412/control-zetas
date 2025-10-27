@@ -15,13 +15,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -29,14 +34,30 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.game_zone.ui.navigation.Screen
-import com.example.game_zone.viewmodel.LoginViewModel
+import com.example.game_zone.viewmodel.UsuarioViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel
+    viewModel: UsuarioViewModel
 ) {
+    val loginExitoso by viewModel.loginExitoso.collectAsState()
     val estado by viewModel.estado.collectAsState()
+    val cargando by viewModel.cargando.collectAsState()
+
+    // Estados locales para el login
+    var correo by remember { mutableStateOf("") }
+    var clave by remember { mutableStateOf("") }
+
+    // Navegar cuando el login sea exitoso
+    LaunchedEffect(loginExitoso) {
+        if (loginExitoso) {
+            navController.navigate(Screen.Home.route) {
+                popUpTo(Screen.Login.route) { inclusive = true }
+            }
+            viewModel.resetLoginExitoso()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -75,8 +96,14 @@ fun LoginScreen(
 
                 // Campo correo
                 OutlinedTextField(
-                    value = estado.correo,
-                    onValueChange = viewModel::onCorreoChange,
+                    value = correo,
+                    onValueChange = {
+                        correo = it
+                        // Limpiar error cuando el usuario escribe
+                        if (estado.errores.correo != null) {
+                            viewModel.onCorreoChange(it)
+                        }
+                    },
                     label = { Text("Correo electrónico") },
                     isError = estado.errores.correo != null,
                     supportingText = {
@@ -85,13 +112,20 @@ fun LoginScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !cargando
                 )
 
                 // Campo contraseña
                 OutlinedTextField(
-                    value = estado.clave,
-                    onValueChange = viewModel::onClaveChange,
+                    value = clave,
+                    onValueChange = {
+                        clave = it
+                        // Limpiar error cuando el usuario escribe
+                        if (estado.errores.clave != null) {
+                            viewModel.onClaveChange(it)
+                        }
+                    },
                     label = { Text("Contraseña") },
                     visualTransformation = PasswordVisualTransformation(),
                     isError = estado.errores.clave != null,
@@ -101,7 +135,8 @@ fun LoginScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !cargando
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -109,9 +144,16 @@ fun LoginScreen(
                 // Botón login
                 Button(
                     onClick = {
-                        if (viewModel.validarLogin()) {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(Screen.Login.route) { inclusive = true }
+                        if (correo.isNotBlank() && clave.isNotBlank()) {
+                            viewModel.limpiarErrores()
+                            viewModel.login(correo, clave)
+                        } else {
+                            // Mostrar errores de validación básica
+                            if (correo.isBlank()) {
+                                viewModel.onCorreoChange("")
+                            }
+                            if (clave.isBlank()) {
+                                viewModel.onClaveChange("")
                             }
                         }
                     },
@@ -119,13 +161,21 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
+                    enabled = !cargando
                 ) {
-                    Text(
-                        text = "Iniciar Sesión",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    if (cargando) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.height(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "Iniciar Sesión",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -142,8 +192,11 @@ fun LoginScreen(
                     )
                     TextButton(
                         onClick = {
+                            // Limpiar el formulario al ir a registro
+                            viewModel.limpiarFormulario()
                             navController.navigate(Screen.Registro.route)
-                        }
+                        },
+                        enabled = !cargando
                     ) {
                         Text(
                             text = "Regístrate",

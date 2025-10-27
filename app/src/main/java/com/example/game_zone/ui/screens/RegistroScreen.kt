@@ -1,5 +1,6 @@
 package com.example.game_zone.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +21,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +50,38 @@ fun RegistroScreen(
     viewModel: UsuarioViewModel
 ) {
     val estado by viewModel.estado.collectAsState()
+    val registroExitoso by viewModel.registroExitoso.collectAsState()
+    var cargando by remember { mutableStateOf(false) }
+
+    // Navegar cuando el registro sea exitoso
+    LaunchedEffect(registroExitoso) {
+        Log.d("REGISTRO_UI", "registroExitoso = $registroExitoso")
+        if (registroExitoso == true) {
+            Log.d("REGISTRO_UI", "✅ NAVEGANDO A HOME")
+            cargando = false
+            navController.navigate(Screen.Home.route) {
+                popUpTo(Screen.Registro.route) { inclusive = true }
+            }
+            viewModel.resetRegistroExitoso()
+            viewModel.limpiarFormulario()
+        }
+    }
+
+    // Detectar errores y detener el loading
+    LaunchedEffect(estado.errores) {
+        val hayErrores = listOfNotNull(
+            estado.errores.correo,
+            estado.errores.nombre,
+            estado.errores.clave,
+            estado.errores.direccion,
+            estado.errores.gustos
+        ).isNotEmpty()
+
+        if (hayErrores && cargando) {
+            Log.d("REGISTRO_UI", "❌ Errores detectados, deteniendo loading")
+            cargando = false
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -92,7 +130,8 @@ fun RegistroScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !cargando
                 )
 
                 OutlinedTextField(
@@ -106,7 +145,8 @@ fun RegistroScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !cargando
                 )
 
                 OutlinedTextField(
@@ -121,7 +161,8 @@ fun RegistroScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !cargando
                 )
 
                 OutlinedTextField(
@@ -135,7 +176,8 @@ fun RegistroScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !cargando
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -176,7 +218,8 @@ fun RegistroScreen(
                                     },
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = MaterialTheme.colorScheme.primary
-                                    )
+                                    ),
+                                    enabled = !cargando
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
@@ -185,7 +228,7 @@ fun RegistroScreen(
                                 )
                             }
                             if (index < GustosDisponibles.lista.size - 1) {
-                                Divider(
+                                HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 4.dp),
                                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                                 )
@@ -206,7 +249,8 @@ fun RegistroScreen(
                         onCheckedChange = viewModel::onAceptarTerminosChange,
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colorScheme.primary
-                        )
+                        ),
+                        enabled = !cargando
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
@@ -221,23 +265,34 @@ fun RegistroScreen(
                 // Botón de registro
                 Button(
                     onClick = {
-                        if (viewModel.validarFormulario()) {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(Screen.Registro.route) { inclusive = true }
-                            }
+                        Log.d("REGISTRO_UI", "🔵 Click en Registrar")
+                        if (!estado.aceptaterminos) {
+                            Log.d("REGISTRO_UI", "❌ Términos no aceptados")
+                            return@Button
                         }
+                        cargando = true
+                        Log.d("REGISTRO_UI", "⏳ Cargando = true")
+                        viewModel.registrarUsuario()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
+                    enabled = !cargando && estado.aceptaterminos
                 ) {
-                    Text(
-                        text = "Registrar",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    if (cargando) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.height(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "Registrar",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
 
                 // Link a login
@@ -253,8 +308,10 @@ fun RegistroScreen(
                     )
                     TextButton(
                         onClick = {
+                            viewModel.limpiarFormulario()
                             navController.navigate(Screen.Login.route)
-                        }
+                        },
+                        enabled = !cargando
                     ) {
                         Text(
                             text = "Inicia sesión",

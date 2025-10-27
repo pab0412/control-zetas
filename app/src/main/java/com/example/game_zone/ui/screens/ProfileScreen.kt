@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
@@ -26,12 +27,48 @@ import com.example.game_zone.viewmodel.UsuarioViewModel
 fun ProfileScreen(
     navController: NavController,
     mainViewModel: MainViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel()
+    usuarioViewModel: UsuarioViewModel
 ) {
     val items = listOf(Screen.Home, Screen.Profile)
     var selectedItem by remember { mutableStateOf(1) }
     val uiState by usuarioViewModel.estado.collectAsState()
+    val usuarioId by usuarioViewModel.usuarioActualId.collectAsState()
     var showImageOptions by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    // Cargar datos del usuario cuando se abre la pantalla
+    LaunchedEffect(usuarioId) {
+        usuarioId?.let { id ->
+            usuarioViewModel.cargarUsuario(id)
+        }
+    }
+
+    // Diálogo de confirmación para cerrar sesión
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Cerrar Sesión") },
+            text = { Text("¿Estás seguro que deseas cerrar sesión?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        usuarioViewModel.cerrarSesion()
+                        showLogoutDialog = false
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                ) {
+                    Text("Sí, cerrar sesión")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     Scaffold(
         bottomBar = {
@@ -71,7 +108,7 @@ fun ProfileScreen(
             // Avatar clickeable con captura de imagen
             CircularAvatarClickable(
                 imageUrl = uiState.imagen,
-                initials = uiState.nombre.ifEmpty { "UG" },
+                initials = uiState.nombre.take(2).uppercase().ifEmpty { "UG" },
                 onClick = { showImageOptions = true },
                 size = 100.dp
             )
@@ -81,6 +118,8 @@ fun ProfileScreen(
                 currentImageUrl = uiState.imagen,
                 onImageSelected = { imagePath ->
                     usuarioViewModel.onImagenChange(imagePath)
+                    // Guardar cambios en la BD
+                    usuarioViewModel.actualizarUsuario()
                 },
                 showOptions = showImageOptions,
                 onDismiss = { showImageOptions = false }
@@ -188,7 +227,9 @@ fun ProfileScreen(
             ProfileOption(
                 icon = Icons.Filled.Edit,
                 title = "Editar Perfil",
-                onClick = { /* TODO: Navegar a editar perfil */ }
+                onClick = {
+                    /* TODO */
+                }
             )
 
             ProfileOption(
@@ -213,7 +254,7 @@ fun ProfileScreen(
 
             // Botón de cerrar sesión
             OutlinedButton(
-                onClick = { navController.navigate(Screen.Login.route) },
+                onClick = { showLogoutDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -268,7 +309,7 @@ fun ProfileOption(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = Icons.Filled.ArrowForward,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Ir",
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
