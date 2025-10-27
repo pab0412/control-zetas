@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Inicializar base de datos y repositorio UNA SOLA VEZ
+        // Inicio de la base de datos junto al repositorio.
         val database = GameZoneDatabase.getDatabase(applicationContext)
         val repository = UsuarioRepository(database.usuarioDao())
         val viewModelFactory = UsuarioViewModel.UsuarioViewModelFactory(repository)
