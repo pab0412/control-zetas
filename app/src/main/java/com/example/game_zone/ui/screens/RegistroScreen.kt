@@ -57,9 +57,9 @@ fun RegistroScreen(
     LaunchedEffect(registroExitoso) {
         Log.d("REGISTRO_UI", "registroExitoso = $registroExitoso")
         if (registroExitoso == true) {
-            Log.d("REGISTRO_UI", "✅ NAVEGANDO A HOME")
+            Log.d("REGISTRO_UI", " NAVEGANDO A LOGIN")
             cargando = false
-            navController.navigate(Screen.Home.route) {
+            navController.navigate(Screen.Login.route) {
                 popUpTo(Screen.Registro.route) { inclusive = true }
             }
             viewModel.resetRegistroExitoso()
@@ -78,7 +78,7 @@ fun RegistroScreen(
         ).isNotEmpty()
 
         if (hayErrores && cargando) {
-            Log.d("REGISTRO_UI", "❌ Errores detectados, deteniendo loading")
+            Log.d("REGISTRO_UI", " Errores detectados, deteniendo loading")
             cargando = false
         }
     }

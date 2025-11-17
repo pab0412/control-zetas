@@ -1,5 +1,6 @@
 package com.example.game_zone.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -88,34 +89,51 @@ class UsuarioViewModel(
         return !hayErrores
     }
 
-    // Nuevas funciones para interactuar con la BD
+    // REGISTRAR USUARIO (CON API)
     fun registrarUsuario() {
         viewModelScope.launch {
+            _cargando.value = true
             try {
                 if (!validarFormulario()) {
+                    _cargando.value = false
                     return@launch
                 }
 
-                // Verificar si el correo ya existe
+                // Verificar si el correo ya existe localmente
                 if (repository.existeCorreo(_estado.value.correo)) {
                     _estado.update {
                         it.copy(errores = it.errores.copy(correo = "Este correo ya está registrado"))
                     }
+                    _cargando.value = false
                     return@launch
                 }
 
+                // Registrar en API y Room
                 val entity = _estado.value.toEntity()
-                val id = repository.insertarUsuario(entity)
-                _usuarioActualId.value = id.toInt()
-                _registroExitoso.value = true
+                val resultado = repository.registrarUsuario(entity)
+
+                resultado.onSuccess { usuarioGuardado ->
+                    _usuarioActualId.value = usuarioGuardado.id
+                    _registroExitoso.value = true
+                    Log.d("UsuarioViewModel", "Usuario registrado con éxito: ${usuarioGuardado.id}")
+                }.onFailure { error ->
+                    Log.e("UsuarioViewModel", "Error al registrar: ${error.message}")
+                    _estado.update {
+                        it.copy(errores = it.errores.copy(correo = "Error al registrar usuario en el servidor"))
+                    }
+                }
             } catch (e: Exception) {
+                Log.e("UsuarioViewModel", "Error inesperado: ${e.message}")
                 _estado.update {
                     it.copy(errores = it.errores.copy(correo = "Error al registrar usuario"))
                 }
+            } finally {
+                _cargando.value = false
             }
         }
     }
 
+    // LOGIN (SOLO LOCAL POR AHORA - PUEDES AGREGAR API DESPUÉS)
     fun login(correo: String, clave: String) {
         viewModelScope.launch {
             _cargando.value = true
@@ -151,33 +169,69 @@ class UsuarioViewModel(
         }
     }
 
+    // ACTUALIZAR USUARIO (CON API)
     fun actualizarUsuario() {
         viewModelScope.launch {
+            _cargando.value = true
             try {
                 if (!validarFormulario()) {
+                    _cargando.value = false
                     return@launch
                 }
 
                 val id = _usuarioActualId.value ?: return@launch
                 val entity = _estado.value.toEntity(id)
-                repository.actualizarUsuario(entity)
+
+                val resultado = repository.actualizarUsuarioEnAPI(entity)
+
+                resultado.onSuccess {
+                    Log.d("UsuarioViewModel", "Usuario actualizado con éxito")
+                }.onFailure { error ->
+                    Log.e("UsuarioViewModel", "Error al actualizar: ${error.message}")
+                    _estado.update {
+                        it.copy(errores = it.errores.copy(correo = "Error al actualizar usuario"))
+                    }
+                }
             } catch (e: Exception) {
                 _estado.update {
                     it.copy(errores = it.errores.copy(correo = "Error al actualizar usuario"))
                 }
+            } finally {
+                _cargando.value = false
             }
         }
     }
 
+    // CARGAR USUARIO
     fun cargarUsuario(id: Int) {
         viewModelScope.launch {
+            _cargando.value = true
             try {
+                // Primero intentar obtener de Room
                 val usuario = repository.obtenerUsuarioPorId(id)
                 usuario?.let {
                     _estado.value = it.toUiState()
                     _usuarioActualId.value = it.id
                 }
+
+                // Luego sincronizar con API en segundo plano
+                repository.sincronizarUsuario(id).onSuccess { usuarioActualizado ->
+                    _estado.value = usuarioActualizado.toUiState()
+                }
             } catch (e: Exception) {
+                Log.e("UsuarioViewModel", "Error al cargar usuario: ${e.message}")
+            } finally {
+                _cargando.value = false
+            }
+        }
+    }
+
+    // OBTENER TODOS LOS USUARIOS (OPCIONAL - PARA DEBUGGING)
+    fun cargarTodosLosUsuarios() {
+        viewModelScope.launch {
+            repository.obtenerTodosLosUsuarios().collect { usuarios ->
+                Log.d("UsuarioViewModel", "Usuarios cargados: ${usuarios.size}")
+                // Aquí puedes hacer algo con la lista si lo necesitas
             }
         }
     }
@@ -209,6 +263,7 @@ class UsuarioViewModel(
             )
         }
     }
+
     // View Factory para interaccion con base de datos
     class UsuarioViewModelFactory(
         private val repository: UsuarioRepository
