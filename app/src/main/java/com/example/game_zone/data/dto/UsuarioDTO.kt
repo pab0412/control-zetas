@@ -1,4 +1,4 @@
-package com.example.game_zone.data.model
+package com.example.game_zone.data.dto
 
 data class UsuarioDTO(
     val id: Int = 0,

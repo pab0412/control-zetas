@@ -16,20 +16,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.game_zone.data.database.GameZoneDatabase
 import com.example.game_zone.data.repository.UsuarioRepository
+import com.example.game_zone.data.repository.ProductoRepository
 import com.example.game_zone.ui.navigation.Screen
 import com.example.game_zone.ui.screens.ProfileScreen
 import com.example.game_zone.ui.screens.SettingsScreen
 import com.example.game_zone.ui.theme.Game_zoneTheme
 import com.example.game_zone.viewmodel.MainViewModel
 import com.example.game_zone.viewmodel.UsuarioViewModel
+import com.example.game_zone.viewmodel.ProductoViewModel
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.example.game_zone.ui.navigation.NavigationEvent
+import com.example.game_zone.ui.screens.DetalleProductoScreen
 import com.example.game_zone.ui.screens.EditarPerfilScreen
 import com.example.game_zone.ui.screens.LoginScreen
 import com.example.game_zone.ui.screens.PantallaCarga
 import com.example.game_zone.ui.screens.RegistroScreen
+import com.example.game_zone.ui.screens.ProductoScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -37,11 +41,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Inicio de la base de datos junto al repositorio.
+        // Inicio de la base de datos junto al repositorio de Usuario
         val database = GameZoneDatabase.getDatabase(applicationContext)
-        val repository = UsuarioRepository(database.usuarioDao())
-        val viewModelFactory = UsuarioViewModel.UsuarioViewModelFactory(repository)
-        val usuarioViewModel = ViewModelProvider(this, viewModelFactory)[UsuarioViewModel::class.java]
+        val usuarioRepository = UsuarioRepository(database.usuarioDao())
+        val usuarioViewModelFactory = UsuarioViewModel.UsuarioViewModelFactory(usuarioRepository)
+        val usuarioViewModel = ViewModelProvider(this, usuarioViewModelFactory)[UsuarioViewModel::class.java]
+
+        // Repositorio de Producto
+        val productoRepository = ProductoRepository(
+            productoDao = database.productoDao(),
+        )
+        val productoViewModelFactory = ProductoViewModel.ProductoViewModelFactory(productoRepository)
+        val productoViewModel = ViewModelProvider(this, productoViewModelFactory)[ProductoViewModel::class.java]
 
         setContent {
             Game_zoneTheme {
@@ -105,7 +116,15 @@ class MainActivity : ComponentActivity() {
                             composable(route = Screen.Home.route) {
                                 HomeScreen(
                                     navController = navController,
-                                    viewModel = mainViewModel
+                                    mainViewModel = mainViewModel,
+                                    productoViewModel = productoViewModel
+                                )
+                            }
+
+                            composable(route = Screen.Producto.route) {
+                                ProductoScreen(
+                                    navController = navController,
+                                    viewModel = productoViewModel
                                 )
                             }
 
@@ -121,6 +140,13 @@ class MainActivity : ComponentActivity() {
                                 EditarPerfilScreen(
                                     navController = navController,
                                     viewModel = usuarioViewModel
+                                )
+                            }
+
+                            composable(route = Screen.DetalleProducto.route) {
+                                DetalleProductoScreen(
+                                    navController = navController,
+                                    productoViewModel = productoViewModel
                                 )
                             }
 

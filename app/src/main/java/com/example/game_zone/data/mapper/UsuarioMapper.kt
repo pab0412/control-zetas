@@ -1,7 +1,7 @@
 package com.example.game_zone.data.mapper
 
 import com.example.game_zone.data.entity.UsuarioEntity
-import com.example.game_zone.data.model.UsuarioDTO
+import com.example.game_zone.data.dto.UsuarioDTO
 import com.example.game_zone.model.UsuarioUiState
 import com.example.game_zone.ui.utils.converter.GustosConverter
 

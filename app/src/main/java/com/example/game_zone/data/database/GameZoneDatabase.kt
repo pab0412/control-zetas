@@ -4,16 +4,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.game_zone.data.dao.ProductoDao
 import com.example.game_zone.data.dao.UsuarioDao
 import com.example.game_zone.data.entity.UsuarioEntity
+import com.example.game_zone.data.entity.ProductoEntity
 
 @Database(
-    entities = [UsuarioEntity::class],
-    version = 1,
+    entities = [UsuarioEntity::class, ProductoEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class GameZoneDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
+    abstract fun productoDao(): ProductoDao
 
     companion object {
         @Volatile

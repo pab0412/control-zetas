@@ -95,11 +95,15 @@ class UsuarioRepository(
 
     suspend fun loginConAPI(correo: String, clave: String): Result<UsuarioEntity> {
         return try {
-            val usuarioDTO = apiService.login(correo, clave)
-            val usuarioEntity = usuarioDTO.toEntity()
+            val response = apiService.login(correo, clave)
 
-            usuarioDao.insertarUsuario(usuarioEntity)
-            Result.success(usuarioEntity)
+            if (response.isSuccessful && response.body() != null) {
+                val usuarioEntity = response.body()!!.toEntity()
+                usuarioDao.insertarUsuario(usuarioEntity)
+                Result.success(usuarioEntity)
+            } else {
+                throw Exception("Error ${response.code()}: ${response.message()}")
+            }
         } catch (e: Exception) {
             Log.e("UsuarioRepository", "Error en login API: ${e.message}")
 
