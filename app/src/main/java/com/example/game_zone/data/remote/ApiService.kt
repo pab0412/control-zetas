@@ -18,6 +18,12 @@ interface ApiService {
     @POST("usuarios")
     suspend fun createUsuario(@Body usuario: UsuarioDTO): UsuarioDTO
 
+    @FormUrlEncoded
+    @POST("usuarios/login")
+    suspend fun login(
+        @Field("correo") correo: String,
+        @Field("clave") clave: String
+    ): UsuarioDTO
     @PUT("usuarios/{id}")
     suspend fun updateUsuario(@Path("id") id: Int, @Body usuario: UsuarioDTO): UsuarioDTO
 

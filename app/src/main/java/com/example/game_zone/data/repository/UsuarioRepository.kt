@@ -93,6 +93,30 @@ class UsuarioRepository(
         }
     }
 
+    suspend fun loginConAPI(correo: String, clave: String): Result<UsuarioEntity> {
+        return try {
+            val usuarioDTO = apiService.login(correo, clave)
+            val usuarioEntity = usuarioDTO.toEntity()
+
+            usuarioDao.insertarUsuario(usuarioEntity)
+            Result.success(usuarioEntity)
+        } catch (e: Exception) {
+            Log.e("UsuarioRepository", "Error en login API: ${e.message}")
+
+            // Fallback a login local
+            try {
+                val usuarioLocal = usuarioDao.login(correo, clave)
+                if (usuarioLocal != null) {
+                    Result.success(usuarioLocal)
+                } else {
+                    Result.failure(Exception("Credenciales incorrectas"))
+                }
+            } catch (localError: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     // Sincronizar un usuario específico desde API
     suspend fun sincronizarUsuario(id: Int): Result<UsuarioEntity> {
         return try {

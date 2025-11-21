@@ -228,7 +228,7 @@ fun ProfileScreen(
                 icon = Icons.Filled.Edit,
                 title = "Editar Perfil",
                 onClick = {
-                    /* TODO */
+                    navController.navigate(Screen.Editar.route)
                 }
             )
 

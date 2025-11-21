@@ -133,13 +133,14 @@ class UsuarioViewModel(
         }
     }
 
-    // LOGIN (SOLO LOCAL POR AHORA - PUEDES AGREGAR API DESPUÉS)
+    // LOGIN (API)
     fun login(correo: String, clave: String) {
         viewModelScope.launch {
             _cargando.value = true
             try {
-                val usuario = repository.login(correo, clave)
-                if (usuario != null) {
+                val resultado = repository.loginConAPI(correo, clave)
+
+                resultado.onSuccess { usuario ->
                     _estado.update {
                         it.copy(
                             nombre = usuario.nombre,
@@ -154,14 +155,22 @@ class UsuarioViewModel(
                     }
                     _usuarioActualId.value = usuario.id
                     _loginExitoso.value = true
-                } else {
+                }.onFailure { exception ->
                     _estado.update {
-                        it.copy(errores = it.errores.copy(correo = "Correo o contraseña incorrectos"))
+                        it.copy(
+                            errores = it.errores.copy(
+                                correo = when {
+                                    exception.message?.contains("Credenciales") == true ->
+                                        "Correo o contraseña incorrectos"
+                                    else -> "Error al iniciar sesión. Verifica tu conexión"
+                                }
+                            )
+                        )
                     }
                 }
             } catch (e: Exception) {
                 _estado.update {
-                    it.copy(errores = it.errores.copy(correo = "Error al iniciar sesión"))
+                    it.copy(errores = it.errores.copy(correo = "Error inesperado al iniciar sesión"))
                 }
             } finally {
                 _cargando.value = false

@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.example.game_zone.ui.navigation.NavigationEvent
+import com.example.game_zone.ui.screens.EditarPerfilScreen
 import com.example.game_zone.ui.screens.LoginScreen
 import com.example.game_zone.ui.screens.PantallaCarga
 import com.example.game_zone.ui.screens.RegistroScreen
@@ -113,6 +114,13 @@ class MainActivity : ComponentActivity() {
                                     navController = navController,
                                     mainViewModel = mainViewModel,
                                     usuarioViewModel = usuarioViewModel
+                                )
+                            }
+
+                            composable(route = Screen.Editar.route) {
+                                EditarPerfilScreen(
+                                    navController = navController,
+                                    viewModel = usuarioViewModel
                                 )
                             }
 

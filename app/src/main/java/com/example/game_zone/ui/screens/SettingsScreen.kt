@@ -25,7 +25,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.Center, // Centrar elementos verticalmente
         horizontalAlignment = Alignment.CenterHorizontally // Centrar elementos horizontalmente
     ) {
-        // 🏷️ Título o texto principal
+        //  Título o texto principal
         Text(text = "Pantalla de Configuración (Settings)")
 
         Spacer(modifier = Modifier.height(24.dp)) // Espacio vertical
