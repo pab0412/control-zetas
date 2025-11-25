@@ -62,12 +62,12 @@ fun RegistroScreen(
         if (hayErrores && cargando) cargando = false
     }
 
-    // 🔵 CONTENEDOR PRINCIPAL
+    //  CONTENEDOR PRINCIPAL
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // 🔵 IMAGEN DE FONDO
+        //  IMAGEN DE FONDO
         Image(
             painter = painterResource(id = R.drawable.fondo_registro),
             contentDescription = null,
@@ -75,14 +75,14 @@ fun RegistroScreen(
             modifier = Modifier.matchParentSize()
         )
 
-        // 🔵 CAPA NEGRA SEMITRANSPARENTE
+        //  CAPA NEGRA SEMITRANSPARENTE
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
         )
 
-        // 🔵 TARJETA PRINCIPAL (GLASS)
+        //  TARJETA PRINCIPAL (GLASS)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,7 +100,7 @@ fun RegistroScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                // 🔵 ENCABEZADO
+                //  ENCABEZADO
                 Text(
                     text = "Crear Cuenta",
                     style = MaterialTheme.typography.headlineLarge,
@@ -118,7 +118,7 @@ fun RegistroScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 🔵 CAMPOS
+                //  CAMPOS
                 OutlinedTextField(
                     value = estado.nombre,
                     onValueChange = viewModel::onNombreChange,
@@ -182,7 +182,7 @@ fun RegistroScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 🔵 GUSTOS
+                //  GUSTOS
                 Text(
                     text = "Géneros Favoritos",
                     style = MaterialTheme.typography.titleMedium,
@@ -239,7 +239,7 @@ fun RegistroScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 🔵 TÉRMINOS
+                //  TÉRMINOS
                 Row(
                     verticalAlignment = Alignment.Top,
                     modifier = Modifier.fillMaxWidth()
@@ -263,7 +263,7 @@ fun RegistroScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 🔵 BOTÓN REGISTRAR
+                //  BOTÓN REGISTRAR
                 Button(
                     onClick = {
                         if (!estado.aceptaterminos) return@Button
@@ -292,7 +292,7 @@ fun RegistroScreen(
                     }
                 }
 
-                // 🔵 LINK A LOGIN
+                //  LINK A LOGIN
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,

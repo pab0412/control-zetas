@@ -47,7 +47,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 👉 Fondo Dragon Ball igual que Profile
+        //  Fondo Dragon Ball igual que Profile
         Image(
             painter = painterResource(id = R.drawable.fondomovil),
             contentDescription = null,
@@ -55,14 +55,14 @@ fun LoginScreen(
             contentScale = ContentScale.Crop
         )
 
-        // 👉 Capa transparente suave tipo glow
+        // Capa transparente suave tipo glow
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White.copy(alpha = 0.05f))
         )
 
-        // 👉 Contenido scroll
+        //  Contenido scroll
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,7 +71,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ⭐ TARJETA GLASS LOGIN
+            //  TARJETA GLASS LOGIN
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -86,7 +86,7 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
 
-                    // ⭐ TÍTULO FUTURISTA
+                    //  TÍTULO FUTURISTA
                     Text(
                         text = "Bienvenido",
                         fontSize = 30.sp,
@@ -100,7 +100,7 @@ fun LoginScreen(
                         color = Color.White.copy(alpha = 0.8f)
                     )
 
-                    // ⭐ Campo Correo (Glass Input)
+                    //  Campo Correo (Glass Input)
                     OutlinedTextField(
                         value = correo,
                         onValueChange = {
@@ -127,7 +127,7 @@ fun LoginScreen(
                         enabled = !cargando
                     )
 
-                    // ⭐ Campo Contraseña (Glass Input)
+                    //  Campo Contraseña (Glass Input)
                     OutlinedTextField(
                         value = clave,
                         onValueChange = {
@@ -155,7 +155,7 @@ fun LoginScreen(
                         enabled = !cargando
                     )
 
-                    // ⭐ BOTÓN NEÓN FUTURISTA
+                    //  BOTÓN NEÓN FUTURISTA
                     Button(
                         onClick = {
                             if (correo.isNotBlank() && clave.isNotBlank()) {
@@ -195,7 +195,7 @@ fun LoginScreen(
                         }
                     }
 
-                    // ⭐ LINK REGISTRO
+                    //  LINK REGISTRO
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically

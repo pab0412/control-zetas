@@ -98,7 +98,7 @@ fun ProfileScreen(
 
         Box(Modifier.fillMaxSize()) {
 
-            // ⭐ FONDO COMPLETO
+            //  FONDO COMPLETO
             Image(
                 painter = painterResource(id = R.drawable.fondo_dragonball),
                 contentDescription = null,
@@ -165,7 +165,7 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // ⭐ INTERESES EN CARD TRANSLÚCIDO
+                //  INTERESES EN CARD TRANSLÚCIDO
                 if (uiState.gustos.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),

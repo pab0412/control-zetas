@@ -41,7 +41,7 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // 🎨 Paleta Sonic
+    //  Paleta Sonic
     val sonicBlue = Color(0xFF0066FF)
     val sonicLightBlue = Color(0xFF00CCFF)
     val sonicYellow = Color(0xFFFFD700)
@@ -132,7 +132,7 @@ fun HomeScreen(
                         .fillMaxSize()
                 ) {
 
-                    // ⭐ BANNER PRINCIPAL
+                    //  BANNER PRINCIPAL
                     item {
                         Box(
                             modifier = Modifier
@@ -163,7 +163,7 @@ fun HomeScreen(
                         }
                     }
 
-                    // ⭐ CATEGORÍAS
+                    //  CATEGORÍAS
                     item {
                         Text(
                             "Categorías",
@@ -213,7 +213,7 @@ fun HomeScreen(
                         }
                     }
 
-                    // ⭐ PRODUCTOS DESTACADOS
+                    //  PRODUCTOS DESTACADOS
                     item {
                         Spacer(modifier = Modifier.height(24.dp))
                         Text(
@@ -225,7 +225,7 @@ fun HomeScreen(
                         )
                     }
 
-                    // ⭐ LISTA DE PRODUCTOS
+                    //  LISTA DE PRODUCTOS
                     items(6) { index ->
                         Card(
                             modifier = Modifier
