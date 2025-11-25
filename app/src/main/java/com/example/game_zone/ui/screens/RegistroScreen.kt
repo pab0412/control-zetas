@@ -1,48 +1,32 @@
 package com.example.game_zone.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.material3.CardDefaults.cardColors
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.game_zone.R
 import com.example.game_zone.model.GustosDisponibles
 import com.example.game_zone.ui.navigation.Screen
 import com.example.game_zone.viewmodel.UsuarioViewModel
+
+// 🔵 FUENTE ESTILO PIXEL
+val registroFont = FontFamily(Font(R.font.pixel))
 
 @Composable
 fun RegistroScreen(
@@ -55,9 +39,7 @@ fun RegistroScreen(
 
     // Navegar cuando el registro sea exitoso
     LaunchedEffect(registroExitoso) {
-        Log.d("REGISTRO_UI", "registroExitoso = $registroExitoso")
         if (registroExitoso == true) {
-            Log.d("REGISTRO_UI", " NAVEGANDO A LOGIN")
             cargando = false
             navController.navigate(Screen.Login.route) {
                 popUpTo(Screen.Registro.route) { inclusive = true }
@@ -67,7 +49,7 @@ fun RegistroScreen(
         }
     }
 
-    // Detectar errores y detener el loading
+    // Detectar errores y detener loading
     LaunchedEffect(estado.errores) {
         val hayErrores = listOfNotNull(
             estado.errores.correo,
@@ -77,24 +59,39 @@ fun RegistroScreen(
             estado.errores.gustos
         ).isNotEmpty()
 
-        if (hayErrores && cargando) {
-            Log.d("REGISTRO_UI", " Errores detectados, deteniendo loading")
-            cargando = false
-        }
+        if (hayErrores && cargando) cargando = false
     }
 
+    // 🔵 CONTENEDOR PRINCIPAL
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        // 🔵 IMAGEN DE FONDO
+        Image(
+            painter = painterResource(id = R.drawable.fondo_registro),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
+
+        // 🔵 CAPA NEGRA SEMITRANSPARENTE
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+        )
+
+        // 🔵 TARJETA PRINCIPAL (GLASS)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            shape = RoundedCornerShape(20.dp),
+            colors = cardColors(
+                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.4f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -102,31 +99,34 @@ fun RegistroScreen(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Encabezado
+
+                // 🔵 ENCABEZADO
                 Text(
                     text = "Crear Cuenta",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    fontFamily = registroFont
                 )
 
                 Text(
                     text = "Completa los datos para registrarte",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = registroFont
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Campos de entrada
+                // 🔵 CAMPOS
                 OutlinedTextField(
                     value = estado.nombre,
                     onValueChange = viewModel::onNombreChange,
-                    label = { Text("Nombre") },
+                    label = { Text("Nombre", fontFamily = registroFont) },
                     isError = estado.errores.nombre != null,
                     supportingText = {
                         estado.errores.nombre?.let {
-                            Text(text = it, color = MaterialTheme.colorScheme.error)
+                            Text(text = it, color = MaterialTheme.colorScheme.error, fontFamily = registroFont)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -137,11 +137,11 @@ fun RegistroScreen(
                 OutlinedTextField(
                     value = estado.correo,
                     onValueChange = viewModel::onCorreoChange,
-                    label = { Text("Correo electrónico") },
+                    label = { Text("Correo electrónico", fontFamily = registroFont) },
                     isError = estado.errores.correo != null,
                     supportingText = {
                         estado.errores.correo?.let {
-                            Text(text = it, color = MaterialTheme.colorScheme.error)
+                            Text(text = it, color = MaterialTheme.colorScheme.error, fontFamily = registroFont)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -152,12 +152,12 @@ fun RegistroScreen(
                 OutlinedTextField(
                     value = estado.clave,
                     onValueChange = viewModel::onClaveChange,
-                    label = { Text("Contraseña") },
+                    label = { Text("Contraseña", fontFamily = registroFont) },
                     visualTransformation = PasswordVisualTransformation(),
                     isError = estado.errores.clave != null,
                     supportingText = {
                         estado.errores.clave?.let {
-                            Text(text = it, color = MaterialTheme.colorScheme.error)
+                            Text(text = it, color = MaterialTheme.colorScheme.error, fontFamily = registroFont)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -168,11 +168,11 @@ fun RegistroScreen(
                 OutlinedTextField(
                     value = estado.direccion,
                     onValueChange = viewModel::onDireccionChange,
-                    label = { Text("Dirección") },
+                    label = { Text("Dirección", fontFamily = registroFont) },
                     isError = estado.errores.direccion != null,
                     supportingText = {
                         estado.errores.direccion?.let {
-                            Text(text = it, color = MaterialTheme.colorScheme.error)
+                            Text(text = it, color = MaterialTheme.colorScheme.error, fontFamily = registroFont)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -182,25 +182,27 @@ fun RegistroScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Sección de gustos
+                // 🔵 GUSTOS
                 Text(
                     text = "Géneros Favoritos",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    fontFamily = registroFont
                 )
 
                 if (estado.errores.gustos != null) {
                     Text(
                         text = estado.errores.gustos!!,
                         color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        fontFamily = registroFont
                     )
                 }
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
+                    colors = cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                     ),
                     shape = RoundedCornerShape(12.dp)
@@ -213,20 +215,18 @@ fun RegistroScreen(
                             ) {
                                 Checkbox(
                                     checked = estado.gustos.contains(gusto),
-                                    onCheckedChange = { seleccionado ->
-                                        viewModel.onGustoChange(gusto, seleccionado)
+                                    onCheckedChange = {
+                                        viewModel.onGustoChange(gusto, it)
                                     },
+                                    enabled = !cargando,
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = MaterialTheme.colorScheme.primary
-                                    ),
-                                    enabled = !cargando
+                                    )
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text(
-                                    text = gusto,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                Text(text = gusto, fontFamily = registroFont)
                             }
+
                             if (index < GustosDisponibles.lista.size - 1) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 4.dp),
@@ -239,7 +239,7 @@ fun RegistroScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Términos y condiciones
+                // 🔵 TÉRMINOS
                 Row(
                     verticalAlignment = Alignment.Top,
                     modifier = Modifier.fillMaxWidth()
@@ -247,31 +247,27 @@ fun RegistroScreen(
                     Checkbox(
                         checked = estado.aceptaterminos,
                         onCheckedChange = viewModel::onAceptarTerminosChange,
+                        enabled = !cargando,
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colorScheme.primary
-                        ),
-                        enabled = !cargando
+                        )
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = "Acepto los términos y condiciones",
                         style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = registroFont,
                         modifier = Modifier.padding(top = 12.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Botón de registro
+                // 🔵 BOTÓN REGISTRAR
                 Button(
                     onClick = {
-                        Log.d("REGISTRO_UI", "🔵 Click en Registrar")
-                        if (!estado.aceptaterminos) {
-                            Log.d("REGISTRO_UI", "❌ Términos no aceptados")
-                            return@Button
-                        }
+                        if (!estado.aceptaterminos) return@Button
                         cargando = true
-                        Log.d("REGISTRO_UI", "⏳ Cargando = true")
                         viewModel.registrarUsuario()
                     },
                     modifier = Modifier
@@ -290,12 +286,13 @@ fun RegistroScreen(
                         Text(
                             text = "Registrar",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = registroFont
                         )
                     }
                 }
 
-                // Link a login
+                // 🔵 LINK A LOGIN
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
@@ -304,7 +301,8 @@ fun RegistroScreen(
                     Text(
                         text = "¿Ya tienes cuenta?",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontFamily = registroFont
                     )
                     TextButton(
                         onClick = {
@@ -315,7 +313,8 @@ fun RegistroScreen(
                     ) {
                         Text(
                             text = "Inicia sesión",
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = registroFont
                         )
                     }
                 }

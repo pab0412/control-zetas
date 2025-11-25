@@ -1,38 +1,25 @@
 package com.example.game_zone.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.game_zone.R
 import com.example.game_zone.ui.navigation.Screen
 import com.example.game_zone.viewmodel.UsuarioViewModel
 
@@ -45,11 +32,9 @@ fun LoginScreen(
     val estado by viewModel.estado.collectAsState()
     val cargando by viewModel.cargando.collectAsState()
 
-    // Estados locales para el login
     var correo by remember { mutableStateOf("") }
     var clave by remember { mutableStateOf("") }
 
-    // Navegar cuando el login sea exitoso
     LaunchedEffect(loginExitoso) {
         if (loginExitoso) {
             navController.navigate(Screen.Home.route) {
@@ -60,148 +45,178 @@ fun LoginScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize()
     ) {
-        Card(
+        // 👉 Fondo Dragon Ball igual que Profile
+        Image(
+            painter = painterResource(id = R.drawable.fondomovil),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // 👉 Capa transparente suave tipo glow
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                .fillMaxSize()
+                .background(Color.White.copy(alpha = 0.05f))
+        )
+
+        // 👉 Contenido scroll
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+
+            // ⭐ TARJETA GLASS LOGIN
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.15f)
+                ),
+                shape = RoundedCornerShape(22.dp),
+                elevation = CardDefaults.cardElevation(6.dp)
             ) {
-                // Encabezado
-                Text(
-                    text = "Bienvenido",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Text(
-                    text = "Inicia sesión para continuar",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Campo correo
-                OutlinedTextField(
-                    value = correo,
-                    onValueChange = {
-                        correo = it
-                        // Limpiar error cuando el usuario escribe
-                        if (estado.errores.correo != null) {
-                            viewModel.onCorreoChange(it)
-                        }
-                    },
-                    label = { Text("Correo electrónico") },
-                    isError = estado.errores.correo != null,
-                    supportingText = {
-                        estado.errores.correo?.let {
-                            Text(text = it, color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !cargando
-                )
-
-                // Campo contraseña
-                OutlinedTextField(
-                    value = clave,
-                    onValueChange = {
-                        clave = it
-                        // Limpiar error cuando el usuario escribe
-                        if (estado.errores.clave != null) {
-                            viewModel.onClaveChange(it)
-                        }
-                    },
-                    label = { Text("Contraseña") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    isError = estado.errores.clave != null,
-                    supportingText = {
-                        estado.errores.clave?.let {
-                            Text(text = it, color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !cargando
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Botón login
-                Button(
-                    onClick = {
-                        if (correo.isNotBlank() && clave.isNotBlank()) {
-                            viewModel.limpiarErrores()
-                            viewModel.login(correo, clave)
-                        } else {
-                            // Mostrar errores de validación básica
-                            if (correo.isBlank()) {
-                                viewModel.onCorreoChange("")
-                            }
-                            if (clave.isBlank()) {
-                                viewModel.onClaveChange("")
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
-                    enabled = !cargando
+                Column(
+                    modifier = Modifier.padding(28.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
-                    if (cargando) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.height(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    } else {
-                        Text(
-                            text = "Iniciar Sesión",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Link a registro
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                    // ⭐ TÍTULO FUTURISTA
                     Text(
-                        text = "¿No tienes cuenta?",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = "Bienvenido",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
-                    TextButton(
-                        onClick = {
-                            // Limpiar el formulario al ir a registro
-                            viewModel.limpiarFormulario()
-                            navController.navigate(Screen.Registro.route)
+
+                    Text(
+                        text = "Inicia sesión para continuar",
+                        fontSize = 15.sp,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+
+                    // ⭐ Campo Correo (Glass Input)
+                    OutlinedTextField(
+                        value = correo,
+                        onValueChange = {
+                            correo = it
+                            if (estado.errores.correo != null) viewModel.onCorreoChange(it)
                         },
+                        label = { Text("Correo electrónico", color = Color.White) },
+                        isError = estado.errores.correo != null,
+                        supportingText = {
+                            estado.errores.correo?.let {
+                                Text(text = it, color = Color.Red)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White
+                        ),
+                        textStyle = LocalTextStyle.current.copy(color = Color.White),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = !cargando
+                    )
+
+                    // ⭐ Campo Contraseña (Glass Input)
+                    OutlinedTextField(
+                        value = clave,
+                        onValueChange = {
+                            clave = it
+                            if (estado.errores.clave != null) viewModel.onClaveChange(it)
+                        },
+                        label = { Text("Contraseña", color = Color.White) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        isError = estado.errores.clave != null,
+                        supportingText = {
+                            estado.errores.clave?.let {
+                                Text(text = it, color = Color.Red)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White
+                        ),
+                        textStyle = LocalTextStyle.current.copy(color = Color.White),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = !cargando
+                    )
+
+                    // ⭐ BOTÓN NEÓN FUTURISTA
+                    Button(
+                        onClick = {
+                            if (correo.isNotBlank() && clave.isNotBlank()) {
+                                viewModel.limpiarErrores()
+                                viewModel.login(correo, clave)
+                            } else {
+                                if (correo.isBlank()) viewModel.onCorreoChange("")
+                                if (clave.isBlank()) viewModel.onClaveChange("")
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        ),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(
+                            width = 2.dp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(Color.Cyan, Color.Magenta)
+                            )
+                        ),
+                        shape = RoundedCornerShape(16.dp),
                         enabled = !cargando
                     ) {
+                        if (cargando) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.height(24.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = "Iniciar Sesión",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    // ⭐ LINK REGISTRO
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = "Regístrate",
-                            fontWeight = FontWeight.SemiBold
+                            text = "¿No tienes cuenta?",
+                            color = Color.White.copy(alpha = 0.8f)
                         )
+                        TextButton(
+                            onClick = {
+                                viewModel.limpiarFormulario()
+                                navController.navigate(Screen.Registro.route)
+                            },
+                            enabled = !cargando
+                        ) {
+                            Text(
+                                text = "Regístrate",
+                                color = Color.Cyan,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
