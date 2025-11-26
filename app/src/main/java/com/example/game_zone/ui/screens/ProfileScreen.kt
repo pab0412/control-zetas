@@ -73,7 +73,7 @@ fun ProfileScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // 🔥🔥  DRAGON BALL Z 🔥🔥
+
         Image(
             painter = painterResource(id = R.drawable.fondo_dragonball),
             contentDescription = null,
